@@ -1,35 +1,55 @@
 const { meetupService } = require('../services');
 
-function findMeetups(req, res) {
-  const meetups = meetupService.find();
-  res.send(meetups);
+async function findMeetups(req, res) {
+  try {
+    const meetups = await meetupService.find();
+    res.send(meetups);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 }
 
-function findMeetupById(req, res) {
-  const { id } = req.params;
-  const meetup = meetupService.findById(id);
-  res.send(meetup);
+async function findMeetupById(req, res) {
+  try {
+    const { id } = req.params;
+    const meetup = await meetupService.findById(id);
+    res.send(meetup);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 }
 
-function createMeetup(req, res) {
-  const { body } = req;
+async function createMeetup(req, res) {
+  try {
+    const { body } = req;
 
-  meetupService.create(body);
-  res.status(201).send();
+    const meetup = await meetupService.create(body);
+    res.status(201).location(`/meetups/${meetup.id}`).send();
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 }
 
-function updateMeetupById(req, res) {
-  const { params: { id }, body } = req;
+async function updateMeetupById(req, res) {
+  try {
+    const { params: { id }, body } = req;
 
-  meetupService.updateById(id, body);
-  res.status(204).send();
+    await meetupService.updateById(id, body);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 }
 
-function deleteMeetupById(req, res) {
-  const { id } = req.params;
+async function deleteMeetupById(req, res) {
+  try {
+    const { id } = req.params;
 
-  meetupService.deleteById(id);
-  res.status(204).send();
+    await meetupService.deleteById(id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 }
 
 module.exports = {
