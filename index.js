@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 const express = require('express');
+const { initDB } = require('./src/db');
 const router = require('./src/routes');
 require('dotenv').config();
 
@@ -11,5 +12,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(router);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on PORT: ${PORT}`);
+  console.log(`Server is running on PORT: ${PORT}.`);
+  initDB();
 });
