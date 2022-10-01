@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const meetupModel = require('./models/meetup.model');
 require('dotenv').config();
 
 const {
@@ -22,5 +23,6 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+db.Meetup = meetupModel(sequelize, Sequelize);
 
 module.exports = db;
