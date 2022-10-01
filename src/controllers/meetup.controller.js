@@ -1,9 +1,11 @@
+const { meetupMapper } = require('../mappers');
 const { meetupService } = require('../services');
 
 async function findMeetups(req, res) {
   try {
     const meetups = await meetupService.find();
-    res.send(meetups);
+    const dtos = meetups.map((meetup) => meetupMapper.mapMeetupToDto(meetup));
+    res.send(dtos);
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -13,7 +15,8 @@ async function findMeetupById(req, res) {
   try {
     const { id } = req.params;
     const meetup = await meetupService.findById(id);
-    res.send(meetup);
+    const dto = meetupMapper.mapMeetupToDto(meetup);
+    res.send(dto);
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -23,7 +26,8 @@ async function createMeetup(req, res) {
   try {
     const { body } = req;
 
-    const meetup = await meetupService.create(body);
+    const dto = meetupMapper.mapDtoToMeetup(body);
+    const meetup = await meetupService.create(dto);
     res.status(201).location(`/meetups/${meetup.id}`).send();
   } catch (error) {
     res.status(500).send(error.message);
@@ -34,7 +38,8 @@ async function updateMeetupById(req, res) {
   try {
     const { params: { id }, body } = req;
 
-    await meetupService.updateById(id, body);
+    const dto = meetupMapper.mapDtoToMeetup(body);
+    await meetupService.updateById(id, dto);
     res.status(204).send();
   } catch (error) {
     res.status(500).send(error.message);
