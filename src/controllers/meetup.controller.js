@@ -2,9 +2,10 @@ const { meetupMapper } = require('../mappers');
 const { NotFoundError } = require('../models/errors');
 const { meetupService } = require('../services');
 
+// todo(?): create validator for request params
 async function findMeetups(req, res, next) {
   try {
-    const meetups = await meetupService.find();
+    const meetups = await meetupService.find(req.query);
     const dtos = meetups.map((meetup) => meetupMapper.mapMeetupToDto(meetup));
     return res.send(dtos);
   } catch (error) {
