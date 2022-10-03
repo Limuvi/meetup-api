@@ -1,0 +1,350 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MeetupAPI",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:7000"
+    }
+  ],
+  "paths": {
+    "/meetups": {
+      "get": {
+        "description": "Find meetups",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Number of page",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit (max meetups count per page)",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 10
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "Sort by specific field",
+            "schema": {
+              "type": "string"
+            },
+            "example": "title"
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "Sort order",
+            "schema": {
+              "type": "string",
+              "default": "desc",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "Filter by meetup title (finds substrings)",
+            "schema": {
+              "type": "string"
+            },
+            "example": "Programming"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Filter meetup date >= startDate",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2022-01-03T00:00:00.000Z"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Filter meetup date <= endDate",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2022-12-04T00:00:00.000Z"
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "description": "Filter by meetup location (finds substrings)",
+            "schema": {
+              "type": "string"
+            },
+            "example": "Vitebsk"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "description": "Filter by tags",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meetups"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a meetup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeetupInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "/meetups/{newId}"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/meetups/{id}": {
+      "get": {
+        "description": "Find meetup by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of meetup",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meetup"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meetup is not found"
+          }
+        }
+      },
+      "put": {
+        "description": "Update (or create) a meetup by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of meetup",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeetupInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created (if meetup is not found by id)",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "/meetups/{newId}"
+              }
+            }
+          },
+          "204": {
+            "description": "No data (success)"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Update (or create) a meetup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of meetup",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "example": 1
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No data"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Meetup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "JS conf"
+          },
+          "description": {
+            "type": "string",
+            "example": "JavaScript meetup"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "programming",
+              "js"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-10-30:13:13.000Z"
+          },
+          "location": {
+            "type": "string",
+            "example": "Vitebsk"
+          }
+        }
+      },
+      "MeetupInput": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "JS conf"
+          },
+          "description": {
+            "type": "string",
+            "example": "JavaScript meetup"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "programming",
+              "js"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-10-30:13:13.000Z"
+          },
+          "location": {
+            "type": "string",
+            "example": "Vitebsk"
+          }
+        }
+      },
+      "Meetups": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Meetup"
+        }
+      },
+      "ValidationError": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "example": [
+          "title is not allowed to be empty",
+          "description is not allowed to be empty"
+        ]
+      }
+    }
+  }
+}
