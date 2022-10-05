@@ -30,5 +30,7 @@ db.Meetup.belongsToMany(db.User, { through: 'userMeetups' });
 // One-to-many relations
 db.Role.hasMany(db.User);
 db.User.belongsTo(db.Role);
+db.User.hasMany(db.Meetup);
+db.Meetup.belongsTo(db.User);
 
 module.exports = db;

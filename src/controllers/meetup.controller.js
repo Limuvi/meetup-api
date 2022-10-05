@@ -1,8 +1,8 @@
 const { meetupMapper } = require('../helpers');
 const { NotFoundError } = require('../models/errors');
+const { ForbiddenError } = require('../models/errors');
 const { meetupService } = require('../services');
 
-// todo(?): create validator for request params
 async function findMeetups(req, res, next) {
   try {
     const meetups = await meetupService.find(req.query);
@@ -31,10 +31,10 @@ async function findMeetupById(req, res, next) {
 
 async function createMeetup(req, res, next) {
   try {
-    const { body } = req;
+    const { body, user: { id: userId } } = req;
 
     const dto = meetupMapper.mapDtoToMeetup(body);
-    const meetup = await meetupService.create(dto);
+    const meetup = await meetupService.create({ ...dto, userId });
     return res.status(201).location(`/meetups/${meetup.id}`).send();
   } catch (error) {
     return next(error);
@@ -43,15 +43,20 @@ async function createMeetup(req, res, next) {
 
 async function updateMeetupById(req, res, next) {
   try {
-    const { params: { id }, body } = req;
+    const { params: { id }, body, user: { id: userId } } = req;
 
     const dto = meetupMapper.mapDtoToMeetup(body);
-    const meetup = await meetupService.updateById(id, dto);
+    const meetup = await meetupService.findById(id);
 
     if (!meetup) {
-      const { id: newId } = await meetupService.create(dto);
+      const { id: newId } = await meetupService.create({ ...dto, userId });
       return res.status(201).location(`/meetups/${newId}`).send();
     }
+    if (meetup.userId !== userId) {
+      throw new ForbiddenError();
+    }
+
+    await meetupService.updateById(id, dto);
 
     return res.status(204).send();
   } catch (error) {
@@ -79,7 +84,13 @@ async function addMemberToMeetup(req, res, next) {
 
 async function deleteMeetupById(req, res, next) {
   try {
-    const { id } = req.params;
+    const { params: { id }, user: { id: userId } } = req;
+
+    const meetup = await meetupService.findById(id);
+
+    if (meetup.userId !== userId) {
+      throw new ForbiddenError();
+    }
 
     const deleted = await meetupService.deleteById(id);
 
