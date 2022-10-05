@@ -1,10 +1,10 @@
+// eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {
   const { message, status } = err;
-  console.log(message);
 
   return res
     .status(status || 500)
-    .send({ message: (message || 'Server error') });
+    .send(status ? { message } : { message: 'Server error' });
 }
 
 module.exports = errorHandler;
