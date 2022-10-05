@@ -1,6 +1,6 @@
-const CryptoJS = require('crypto-js');
 const { ROLE_USER } = require('../constants');
 const { User } = require('../db');
+const { hashPassword } = require('../helpers');
 const roleService = require('./role.service');
 
 async function findById(id) {
@@ -16,10 +16,6 @@ async function findByUsername(username) {
   });
 
   return user;
-}
-
-function hashPassword(password) {
-  return CryptoJS.SHA512(password).toString();
 }
 
 async function findByUsernameAndPassword(username, password) {
