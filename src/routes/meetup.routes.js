@@ -1,3 +1,4 @@
+const { ROLE_USER, ROLE_ORGANIZER } = require('../constants');
 const {
   findMeetups,
   findMeetupById,
@@ -19,7 +20,7 @@ module.exports = (route, app, passport) => {
     `${route}/`,
     [
       passport.authenticate('jwt', { session: false }),
-      checkRole('organizer'),
+      checkRole(ROLE_ORGANIZER),
       validator(meetupSchema),
     ],
     createMeetup,
@@ -28,7 +29,7 @@ module.exports = (route, app, passport) => {
     `${route}/:id`,
     [
       passport.authenticate('jwt', { session: false }),
-      checkRole('organizer'),
+      checkRole(ROLE_ORGANIZER),
       validator(meetupSchema),
     ],
     updateMeetupById,
@@ -37,7 +38,7 @@ module.exports = (route, app, passport) => {
     `${route}/:id/members`,
     [
       passport.authenticate('jwt', { session: false }),
-      checkRole('user'),
+      checkRole(ROLE_USER),
     ],
     addMemberToMeetup,
   );
@@ -45,7 +46,7 @@ module.exports = (route, app, passport) => {
     `${route}/:id`,
     [
       passport.authenticate('jwt', { session: false }),
-      checkRole('organizer'),
+      checkRole(ROLE_ORGANIZER),
     ],
     deleteMeetupById,
   );

@@ -1,3 +1,9 @@
+const {
+  ACCESS_TOKEN_COOKIE_MAX_AGE,
+  REFRESH_TOKEN_COOKIE_MAX_AGE,
+  ACCESS_TOKEN_JWT_EXPIRES_IN,
+  REFRESH_TOKEN_JWT_EXPIRES_IN,
+} = require('../constants');
 const { generateToken } = require('../helpers');
 const { ConflictError, UnauthorizedError } = require('../models/errors');
 const { userService } = require('../services');
@@ -31,13 +37,13 @@ exports.signin = async (req, res, next) => {
 
     const { id } = user;
 
-    const token = generateToken({ id }, '1m');
-    const refreshToken = generateToken({ id }, '30d');
+    const token = generateToken({ id }, ACCESS_TOKEN_JWT_EXPIRES_IN);
+    const refreshToken = generateToken({ id }, REFRESH_TOKEN_JWT_EXPIRES_IN);
 
     await userService.updateRefreshTokenById(id, refreshToken);
 
-    res.cookie('access_token', token, { maxAge: 1000 * 60 * 1 });
-    res.cookie('refresh_token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 });
+    res.cookie('access_token', token, { maxAge: ACCESS_TOKEN_COOKIE_MAX_AGE });
+    res.cookie('refresh_token', refreshToken, { maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE });
 
     return res.send();
   } catch (error) {

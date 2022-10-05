@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 const db = require('./db.config');
+const { ROLE_ORGANIZER, ROLE_USER } = require('../constants');
 
 async function initDB() {
   try {
@@ -7,15 +8,15 @@ async function initDB() {
     console.log('Connected to DB.');
 
     await db.Role.findOrCreate({
-      where: { name: 'organizer' },
+      where: { name: ROLE_ORGANIZER },
       defaults: {
-        name: 'organizer',
+        name: ROLE_ORGANIZER,
       },
     });
     await db.Role.findOrCreate({
-      where: { name: 'user' },
+      where: { name: ROLE_USER },
       defaults: {
-        name: 'user',
+        name: ROLE_USER,
       },
     });
   } catch (error) {

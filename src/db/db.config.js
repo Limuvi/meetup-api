@@ -2,15 +2,9 @@ const Sequelize = require('sequelize');
 const meetupModel = require('./models/meetup.model');
 const userModel = require('./models/user.model');
 const roleModel = require('./models/role.model');
-require('dotenv').config();
-
 const {
-  DB_DIALECT,
-  DB_HOST,
-  DB_NAME,
-  DB_USERNAME,
-  DB_PASSWORD,
-} = process.env;
+  DB_DIALECT, DB_HOST, DB_NAME, DB_USERNAME, DB_PASSWORD,
+} = require('../constants');
 
 const sequelize = new Sequelize(DB_NAME, DB_USERNAME, DB_PASSWORD, {
   host: DB_HOST,

@@ -1,6 +1,6 @@
 const { Strategy } = require('passport-jwt');
+const { JWT_SECRET } = require('../constants');
 const userService = require('../services/user.service');
-require('dotenv').config();
 
 const cookieExtractor = (req) => {
   let jwt = null;
@@ -14,7 +14,7 @@ const cookieExtractor = (req) => {
 
 const jwtOptions = {
   jwtFromRequest: cookieExtractor,
-  secretOrKey: process.env.JWT_SECRET,
+  secretOrKey: JWT_SECRET,
 };
 
 const jwtStrategy = new Strategy(jwtOptions, (async (payload, next) => {

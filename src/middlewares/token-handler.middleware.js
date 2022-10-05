@@ -1,5 +1,11 @@
 const { decodeToken, generateToken } = require('../helpers');
 const { userService } = require('../services');
+const {
+  ACCESS_TOKEN_COOKIE_MAX_AGE,
+  REFRESH_TOKEN_COOKIE_MAX_AGE,
+  ACCESS_TOKEN_JWT_EXPIRES_IN,
+  REFRESH_TOKEN_JWT_EXPIRES_IN,
+} = require('../constants');
 
 async function tokenHandler(req, res, next) {
   try {
@@ -14,13 +20,13 @@ async function tokenHandler(req, res, next) {
           const user = await userService.findById(id);
 
           if (user.refreshToken === refreshToken) {
-            const newAccessToken = generateToken({ id }, '1m');
-            const newRefreshToken = generateToken({ id }, '30d');
+            const newAccessToken = generateToken({ id }, ACCESS_TOKEN_JWT_EXPIRES_IN);
+            const newRefreshToken = generateToken({ id }, REFRESH_TOKEN_JWT_EXPIRES_IN);
 
             await userService.updateRefreshTokenById(id, newRefreshToken);
 
-            res.cookie('access_token', newAccessToken, { maxAge: 1000 * 60 * 1 });
-            res.cookie('refresh_token', newRefreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 });
+            res.cookie('access_token', newAccessToken, { maxAge: ACCESS_TOKEN_COOKIE_MAX_AGE });
+            res.cookie('refresh_token', newRefreshToken, { maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE });
             req.cookies.access_token = newAccessToken;
           }
         }
