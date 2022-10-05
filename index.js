@@ -2,9 +2,12 @@
 const fs = require('fs');
 const swaggerUi = require('swagger-ui-express');
 const express = require('express');
+const passport = require('passport');
+
 const { initDB } = require('./src/db');
-const router = require('./src/routes');
+const { meetupRouter, authRouter } = require('./src/routes');
 const { errorHandler } = require('./src/middlewares');
+const { jwtStrategy } = require('./src/auth');
 
 const PORT = 7000;
 const app = express();
@@ -12,7 +15,11 @@ const swaggerFile = JSON.parse(fs.readFileSync('./openapi.json'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(router);
+
+passport.use(jwtStrategy);
+app.use(passport.initialize());
+meetupRouter('/meetups', app, passport);
+authRouter('/auth', app);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(errorHandler);
 

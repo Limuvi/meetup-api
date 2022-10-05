@@ -1,4 +1,3 @@
-const express = require('express');
 const {
   findMeetups,
   findMeetupById,
@@ -9,20 +8,33 @@ const {
 const { validator } = require('../middlewares');
 const { meetupSchema } = require('../validators');
 
-const router = express.Router();
-
-router.get('/', findMeetups);
-router.get('/:id', findMeetupById);
-router.post(
-  '/',
-  [validator(meetupSchema)],
-  createMeetup,
-);
-router.put(
-  '/:id',
-  [validator(meetupSchema)],
-  updateMeetupById,
-);
-router.delete('/:id', deleteMeetupById);
-
-module.exports = router;
+module.exports = (route, app, passport) => {
+  app.get(
+    `${route}/`,
+    findMeetups,
+  );
+  app.get(`${route}/:id`, findMeetupById);
+  app.post(
+    `${route}/`,
+    [
+      passport.authenticate('jwt', { session: false }),
+      validator(meetupSchema),
+    ],
+    createMeetup,
+  );
+  app.put(
+    `${route}/:id`,
+    [
+      passport.authenticate('jwt', { session: false }),
+      validator(meetupSchema),
+    ],
+    updateMeetupById,
+  );
+  app.delete(
+    `${route}/:id`,
+    [
+      passport.authenticate('jwt', { session: false }),
+    ],
+    deleteMeetupById,
+  );
+};

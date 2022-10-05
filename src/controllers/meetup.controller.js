@@ -1,4 +1,4 @@
-const { meetupMapper } = require('../mappers');
+const { meetupMapper } = require('../helpers');
 const { NotFoundError } = require('../models/errors');
 const { meetupService } = require('../services');
 
