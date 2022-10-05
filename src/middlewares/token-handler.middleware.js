@@ -19,7 +19,7 @@ async function tokenHandler(req, res, next) {
 
           const user = await userService.findById(id);
 
-          if (user.refreshToken === refreshToken) {
+          if (user && user.refreshToken === refreshToken) {
             const newAccessToken = generateToken({ id }, ACCESS_TOKEN_JWT_EXPIRES_IN);
             const newRefreshToken = generateToken({ id }, REFRESH_TOKEN_JWT_EXPIRES_IN);
 
