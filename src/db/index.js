@@ -1,8 +1,9 @@
 const initDB = require('./db.init');
-const { Meetup, User } = require('./db.config');
+const { Meetup, User, Role } = require('./db.config');
 
 module.exports = {
   initDB,
   Meetup,
   User,
+  Role,
 };

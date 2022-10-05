@@ -6,7 +6,7 @@ const {
   addMemberToMeetup,
   deleteMeetupById,
 } = require('../controllers/meetup.controller');
-const { validator } = require('../middlewares');
+const { validator, checkRole } = require('../middlewares');
 const { meetupSchema } = require('../validators');
 
 module.exports = (route, app, passport) => {
@@ -19,6 +19,7 @@ module.exports = (route, app, passport) => {
     `${route}/`,
     [
       passport.authenticate('jwt', { session: false }),
+      checkRole('organizer'),
       validator(meetupSchema),
     ],
     createMeetup,
@@ -27,6 +28,7 @@ module.exports = (route, app, passport) => {
     `${route}/:id`,
     [
       passport.authenticate('jwt', { session: false }),
+      checkRole('organizer'),
       validator(meetupSchema),
     ],
     updateMeetupById,
@@ -35,6 +37,7 @@ module.exports = (route, app, passport) => {
     `${route}/:id/members`,
     [
       passport.authenticate('jwt', { session: false }),
+      checkRole('user'),
     ],
     addMemberToMeetup,
   );
@@ -42,6 +45,7 @@ module.exports = (route, app, passport) => {
     `${route}/:id`,
     [
       passport.authenticate('jwt', { session: false }),
+      checkRole('organizer'),
     ],
     deleteMeetupById,
   );

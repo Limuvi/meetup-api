@@ -1,5 +1,6 @@
 const CryptoJS = require('crypto-js');
 const { User } = require('../db');
+const roleService = require('./role.service');
 
 async function findById(id) {
   const user = await User.findByPk(id);
@@ -31,9 +32,10 @@ async function findByUsernameAndPassword(username, password) {
   return user;
 }
 
-async function create({ username, password }) {
+async function create({ username, password, roleName = 'user' }) {
   const hashedPassword = hashPassword(password);
-  const user = User.create({ username, hashedPassword });
+  const role = await roleService.findByName(roleName);
+  const user = await User.create({ username, hashedPassword, roleId: role.id });
 
   return user;
 }

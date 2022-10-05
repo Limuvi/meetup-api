@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const meetupModel = require('./models/meetup.model');
 const userModel = require('./models/user.model');
+const roleModel = require('./models/role.model');
 require('dotenv').config();
 
 const {
@@ -26,9 +27,14 @@ db.sequelize = sequelize;
 
 db.Meetup = meetupModel(sequelize, Sequelize);
 db.User = userModel(sequelize, Sequelize);
+db.Role = roleModel(sequelize, Sequelize);
 
-// Relations
+// Many-to-many relations
 db.User.belongsToMany(db.Meetup, { through: 'userMeetups' });
 db.Meetup.belongsToMany(db.User, { through: 'userMeetups' });
+
+// One-to-many relations
+db.Role.hasMany(db.User);
+db.User.belongsTo(db.Role);
 
 module.exports = db;
