@@ -1,4 +1,5 @@
 const { generateToken } = require('../helpers');
+const { ConflictError, UnauthorizedError } = require('../models/errors');
 const { userService } = require('../services');
 require('dotenv').config();
 
@@ -8,7 +9,7 @@ exports.signup = async (req, res, next) => {
 
     const user = await userService.findByUsername(username);
     if (user) {
-      return res.status(409).send({ message: 'User is already exists' });
+      throw new ConflictError('User is already exists');
     }
 
     const newUser = userService.create({ username, password });
@@ -25,7 +26,7 @@ exports.signin = async (req, res, next) => {
     const user = await userService.findByUsernameAndPassword(username, password);
 
     if (!user) {
-      return res.status(401).json({ message: 'Username or password didn\'t match!' });
+      throw new UnauthorizedError('Username or password didn\'t match!');
     }
 
     const { id } = user;
