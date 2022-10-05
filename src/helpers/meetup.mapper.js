@@ -6,7 +6,8 @@ function mapMeetupToDto(meetup) {
     tags: meetup.tags,
     date: meetup.date,
     location: meetup.location,
-    users: meetup.users.map(({ id, username }) => ({ id, username })),
+    members: meetup.users.map(({ id, username }) => ({ id, username })),
+    organizerId: meetup.userId,
   };
 }
 
