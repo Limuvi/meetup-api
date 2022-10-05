@@ -7,12 +7,13 @@ const {
   addMemberToMeetup,
   deleteMeetupById,
 } = require('../controllers/meetup.controller');
-const { validator, checkRole } = require('../middlewares');
-const { meetupSchema } = require('../validators');
+const { validate, checkRole } = require('../middlewares');
+const { meetupSchema, meetupParamsSchema } = require('../validators');
 
 module.exports = (route, app, passport) => {
   app.get(
     `${route}/`,
+    [validate(meetupParamsSchema, 'query')],
     findMeetups,
   );
   app.get(`${route}/:id`, findMeetupById);
@@ -21,7 +22,7 @@ module.exports = (route, app, passport) => {
     [
       passport.authenticate('jwt', { session: false }),
       checkRole(ROLE_ORGANIZER),
-      validator(meetupSchema),
+      validate(meetupSchema),
     ],
     createMeetup,
   );
@@ -30,7 +31,7 @@ module.exports = (route, app, passport) => {
     [
       passport.authenticate('jwt', { session: false }),
       checkRole(ROLE_ORGANIZER),
-      validator(meetupSchema),
+      validate(meetupSchema),
     ],
     updateMeetupById,
   );

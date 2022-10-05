@@ -2,21 +2,21 @@ const {
   signup,
   signin,
 } = require('../controllers/auth.controller');
-const { validator } = require('../middlewares');
+const { validate } = require('../middlewares');
 const { userSchema } = require('../validators');
 
 module.exports = (route, app) => {
   app.post(
     `${route}/signup`,
     [
-      validator(userSchema),
+      validate(userSchema),
     ],
     signup,
   );
   app.post(
     `${route}/signin`,
     [
-      validator(userSchema),
+      validate(userSchema),
     ],
     signin,
   );
