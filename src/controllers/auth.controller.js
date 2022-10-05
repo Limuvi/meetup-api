@@ -29,7 +29,9 @@ exports.signin = async (req, res, next) => {
     }
 
     const token = generateToken({ id: user.id }, '30m');
-    return res.send({ token });
+
+    res.cookie('access_token', token, { maxAge: 1000 * 60 * 30 });
+    return res.send();
   } catch (error) {
     return next(error);
   }
