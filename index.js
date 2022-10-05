@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const { initDB } = require('./src/db');
 const { meetupRouter, authRouter } = require('./src/routes');
-const { errorHandler } = require('./src/middlewares');
+const { errorHandler, tokenHandler } = require('./src/middlewares');
 const { jwtStrategy } = require('./src/auth');
 
 const PORT = 7000;
@@ -22,6 +22,7 @@ app.use(cookieParser(JWT_SECRET));
 
 passport.use(jwtStrategy);
 app.use(passport.initialize());
+app.use(tokenHandler);
 meetupRouter('/meetups', app, passport);
 authRouter('/auth', app);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));

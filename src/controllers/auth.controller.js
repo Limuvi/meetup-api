@@ -28,9 +28,16 @@ exports.signin = async (req, res, next) => {
       return res.status(401).json({ message: 'Username or password didn\'t match!' });
     }
 
-    const token = generateToken({ id: user.id }, '30m');
+    const { id } = user;
 
-    res.cookie('access_token', token, { maxAge: 1000 * 60 * 30 });
+    const token = generateToken({ id }, '1m');
+    const refreshToken = generateToken({ id }, '30d');
+
+    await userService.updateRefreshTokenById(id, refreshToken);
+
+    res.cookie('access_token', token, { maxAge: 1000 * 60 * 1 });
+    res.cookie('refresh_token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 });
+
     return res.send();
   } catch (error) {
     return next(error);

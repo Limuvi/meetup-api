@@ -38,9 +38,19 @@ async function create({ username, password }) {
   return user;
 }
 
+async function updateRefreshTokenById(id, refreshToken) {
+  const user = User.update(
+    { refreshToken },
+    { where: { id } },
+  );
+
+  return user;
+}
+
 module.exports = {
   findById,
   findByUsername,
   findByUsernameAndPassword,
   create,
+  updateRefreshTokenById,
 };
