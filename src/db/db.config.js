@@ -27,4 +27,8 @@ db.sequelize = sequelize;
 db.Meetup = meetupModel(sequelize, Sequelize);
 db.User = userModel(sequelize, Sequelize);
 
+// Relations
+db.User.belongsToMany(db.Meetup, { through: 'userMeetups' });
+db.Meetup.belongsToMany(db.User, { through: 'userMeetups' });
+
 module.exports = db;

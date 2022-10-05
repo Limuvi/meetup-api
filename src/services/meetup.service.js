@@ -3,7 +3,7 @@ const {
     and, iLike, gte, lte,
   },
 } = require('sequelize');
-const { Meetup } = require('../db');
+const { Meetup, User } = require('../db');
 
 async function find({
   page = null, limit = null, sortBy = 'id', orderBy = 'asc', title, startDate, endDate, tags, location,
@@ -18,6 +18,7 @@ async function find({
         location ? { location: { [iLike]: `%${location}%` } } : null,
       ],
     },
+    include: { model: User },
     order: [
       [
         sortBy,
@@ -31,7 +32,10 @@ async function find({
 }
 
 async function findById(id) {
-  const meetup = await Meetup.findByPk(id);
+  const meetup = await Meetup.findOne({
+    where: { id },
+    include: { model: User },
+  });
   return meetup;
 }
 
@@ -48,6 +52,18 @@ async function updateById(id, data) {
   return meetup;
 }
 
+async function addUserToMeetupById(id, user) {
+  const meetup = await findById(id);
+
+  if (meetup) {
+    await meetup.addUser(user);
+
+    const updatedMeetup = await findById(id);
+    return updatedMeetup;
+  }
+  return null;
+}
+
 async function deleteById(id) {
   const deleted = await Meetup.destroy({
     where: { id },
@@ -60,5 +76,6 @@ module.exports = {
   findById,
   create,
   updateById,
+  addUserToMeetupById,
   deleteById,
 };

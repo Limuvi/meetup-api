@@ -59,6 +59,24 @@ async function updateMeetupById(req, res, next) {
   }
 }
 
+async function addMemberToMeetup(req, res, next) {
+  try {
+    const { params: { id }, user } = req;
+
+    const meetup = await meetupService.addUserToMeetupById(id, user);
+
+    if (!meetup) {
+      throw new NotFoundError('Meetup is not found!');
+    }
+
+    const dto = meetupMapper.mapMeetupToDto(meetup);
+
+    return res.status(200).send(dto);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function deleteMeetupById(req, res, next) {
   try {
     const { id } = req.params;
@@ -80,5 +98,6 @@ module.exports = {
   findMeetupById,
   createMeetup,
   updateMeetupById,
+  addMemberToMeetup,
   deleteMeetupById,
 };

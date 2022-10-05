@@ -3,6 +3,7 @@ const {
   findMeetupById,
   createMeetup,
   updateMeetupById,
+  addMemberToMeetup,
   deleteMeetupById,
 } = require('../controllers/meetup.controller');
 const { validator } = require('../middlewares');
@@ -29,6 +30,13 @@ module.exports = (route, app, passport) => {
       validator(meetupSchema),
     ],
     updateMeetupById,
+  );
+  app.patch(
+    `${route}/:id/members`,
+    [
+      passport.authenticate('jwt', { session: false }),
+    ],
+    addMemberToMeetup,
   );
   app.delete(
     `${route}/:id`,
