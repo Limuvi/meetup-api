@@ -89,7 +89,7 @@ async function deleteMeetupById(req, res, next) {
 
     const meetup = await meetupService.findById(id);
 
-    if (meetup.userId !== userId) {
+    if (meetup && meetup.userId !== userId) {
       throw new ForbiddenError();
     }
 
