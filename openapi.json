@@ -12,7 +12,10 @@
   "paths": {
     "/meetups": {
       "get": {
-        "description": "Find meetups",
+        "summary": "Finds meetups",
+        "tags": [
+          "meetups"
+        ],
         "parameters": [
           {
             "name": "page",
@@ -37,9 +40,17 @@
             "in": "query",
             "description": "Sort by specific field",
             "schema": {
-              "type": "string"
-            },
-            "example": "title"
+              "type": "string",
+              "default": "id",
+              "enum": [
+                "id",
+                "title",
+                "description",
+                "tags",
+                "date",
+                "location"
+              ]
+            }
           },
           {
             "name": "orderBy",
@@ -70,7 +81,7 @@
             "schema": {
               "type": "string"
             },
-            "example": "2022-01-03T00:00:00.000Z"
+            "example": "2022-01-03"
           },
           {
             "name": "endDate",
@@ -79,7 +90,7 @@
             "schema": {
               "type": "string"
             },
-            "example": "2022-12-04T00:00:00.000Z"
+            "example": "2022-12-04"
           },
           {
             "name": "location",
@@ -106,7 +117,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful operation",
+            "description": "Success. Returns array of meetups or empty array.",
             "content": {
               "application/json": {
                 "schema": {
@@ -114,11 +125,24 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Error. Request query params are invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
           }
         }
       },
       "post": {
-        "description": "Create a meetup",
+        "summary": "Creates a meetup",
+        "tags": [
+          "meetups"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -130,7 +154,7 @@
         },
         "responses": {
           "201": {
-            "description": "Created",
+            "description": "Success. New meetup is created.",
             "headers": {
               "Location": {
                 "schema": {
@@ -141,11 +165,31 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Error. Request body fields are invalid.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unathorized. You need to login.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnathorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are authoried, but don't have a permission to do this. Need a organizer role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
                 }
               }
             }
@@ -155,7 +199,10 @@
     },
     "/meetups/{id}": {
       "get": {
-        "description": "Find meetup by id",
+        "summary": "Finds meetup by id",
+        "tags": [
+          "meetups"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -180,12 +227,22 @@
             }
           },
           "404": {
-            "description": "Meetup is not found"
+            "description": "Meetup is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
           }
         }
       },
       "put": {
-        "description": "Update (or create) a meetup by id",
+        "summary": "Updates (or creates) a meetup by id",
+        "tags": [
+          "meetups"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -209,7 +266,7 @@
         },
         "responses": {
           "201": {
-            "description": "Created (if meetup is not found by id)",
+            "description": "Creates new meetup if meetup by id is not exists.",
             "headers": {
               "Location": {
                 "schema": {
@@ -220,7 +277,7 @@
             }
           },
           "204": {
-            "description": "No data (success)"
+            "description": "Updates existing meetup if meetup by id is exists and current user is creator of this meetup."
           },
           "400": {
             "description": "Bad request",
@@ -231,11 +288,34 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unathorized. You need to login.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnathorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are authoried, but don't have a permission to do this. Need a organizer role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
-        "description": "Update (or create) a meetup",
+        "summary": "Deletes meetup by id",
+        "tags": [
+          "meetups"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -252,8 +332,171 @@
           "204": {
             "description": "No data"
           },
+          "401": {
+            "description": "Unathorized. You need to login.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnathorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are authoried, but don't have a permission to do this. Need a organizer role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Not found"
+            "description": "Meetup is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/meetups/{id}/members": {
+      "patch": {
+        "summary": "Add current user to meetup members",
+        "tags": [
+          "meetups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of meetup",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetupMembers"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unathorized. You need to login.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnathorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are authoried, but don't have a permission to do this. Need a user role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meetup is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "summary": "Creates a new user",
+        "tags": [
+          "auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success. New user is created."
+          },
+          "400": {
+            "description": "Error. Request body fields are invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict. User with such username is already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "summary": "Sign in with username and password",
+        "tags": [
+          "auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully authenticated. Refresh token and access token are saved in cookies."
+          },
+          "401": {
+            "description": "Error. Username or password didn't match.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
           }
         }
       }
@@ -294,6 +537,47 @@
           "location": {
             "type": "string",
             "example": "Vitebsk"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "username": {
+                  "type": "string",
+                  "example": "user"
+                }
+              }
+            }
+          },
+          "organizerId": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "MeetupMembers": {
+        "type": "object",
+        "properties": {
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "username": {
+                  "type": "string",
+                  "example": "user"
+                }
+              }
+            }
           }
         }
       },
@@ -321,11 +605,24 @@
           "date": {
             "type": "string",
             "format": "date-time",
-            "example": "2022-10-30:13:13.000Z"
+            "example": "2022-10-30T00:00:00.000Z"
           },
           "location": {
             "type": "string",
             "example": "Vitebsk"
+          }
+        }
+      },
+      "UserInput": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "user"
+          },
+          "password": {
+            "type": "string",
+            "example": 12345
           }
         }
       },
@@ -336,14 +633,55 @@
         }
       },
       "ValidationError": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "example": [
-          "title is not allowed to be empty",
-          "description is not allowed to be empty"
-        ]
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "<field1> is not allowed to be empty",
+              "<field2> must be greater than 0"
+            ]
+          }
+        }
+      },
+      "UnathorizedError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Unathorized error"
+          }
+        }
+      },
+      "ForbiddenError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Forbidden error"
+          }
+        }
+      },
+      "ConflictError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Conflict error"
+          }
+        }
+      },
+      "NotFoundError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Not found error"
+          }
+        }
       }
     }
   }
