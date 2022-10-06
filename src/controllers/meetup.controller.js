@@ -75,8 +75,9 @@ async function addMemberToMeetup(req, res, next) {
     }
 
     const dto = meetupMapper.mapMeetupToDto(meetup);
+    const { members } = dto;
 
-    return res.status(200).send(dto);
+    return res.status(200).send({ members });
   } catch (error) {
     return next(error);
   }
